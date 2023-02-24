@@ -22,6 +22,7 @@ from ..tasks import (
     OpenMLLearningCurveTask,
     OpenMLClusteringTask,
     OpenMLRegressionTask,
+    OpenMLActiveClassificationTask
 )
 
 
@@ -383,6 +384,28 @@ class OpenMLRun(OpenMLBase):
                 ("row_id", "NUMERIC"),
                 ("cluster", "NUMERIC"),
             ]
+
+        elif isinstance(task, OpenMLActiveClassificationTask):
+            class_labels = task.class_labels
+            instance_specifications = [
+                ("repeat", "NUMERIC"),
+                ("fold", "NUMERIC"),
+                ("cycle", "NUMERIC"),
+                ("budget", "NUMERIC"),
+                ("row_id", "NUMERIC"),
+            ]
+
+            arff_dict["attributes"] = instance_specifications
+            if class_labels is not None:
+                prediction_confidences = [
+                    ("confidence." + class_labels[i], "NUMERIC") for i in range(len(class_labels))
+                ]
+                prediction_and_true = [("prediction", class_labels), ("correct", class_labels)]
+                arff_dict["attributes"] = (
+                    arff_dict["attributes"] + prediction_confidences + prediction_and_true
+                )
+            else:
+                raise ValueError("The task has no class labels")
 
         else:
             raise NotImplementedError("Task type %s is not yet supported." % str(task.task_type))

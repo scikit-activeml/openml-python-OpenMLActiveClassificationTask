@@ -29,6 +29,7 @@ class TaskType(Enum):
     SURVIVAL_ANALYSIS = 7
     SUBGROUP_DISCOVERY = 8
     MULTITASK_REGRESSION = 9
+    ACTIVE_CLASSIFICATION = 10
 
 
 class OpenMLTask(OpenMLBase):
@@ -264,6 +265,7 @@ class OpenMLSupervisedTask(OpenMLTask, ABC):
             TaskType.SUPERVISED_CLASSIFICATION,
             TaskType.SUPERVISED_REGRESSION,
             TaskType.LEARNING_CURVE,
+            TaskType.ACTIVE_CLASSIFICATION,
         ):
             raise NotImplementedError(self.task_type)
         X, y, _, _ = dataset.get_data(
@@ -488,3 +490,65 @@ class OpenMLLearningCurveTask(OpenMLClassificationTask):
             class_labels=class_labels,
             cost_matrix=cost_matrix,
         )
+
+
+class OpenMLActiveClassificationTask(OpenMLSupervisedTask):
+    """OpenML Active Classification object.
+
+    Parameters
+    ----------
+    class_labels : List of str (optional)
+    cost_matrix: array (optional)
+    """
+
+    def __init__(
+        self,
+        task_type_id: TaskType,
+        task_type: str,
+        data_set_id: int,
+        target_name: str,
+        estimation_procedure_id: int = 1,
+        estimation_procedure_type: Optional[str] = None,
+        estimation_parameters: Optional[Dict[str, str]] = None,
+        evaluation_measure: Optional[str] = None,
+        data_splits_url: Optional[str] = None,
+        task_id: Optional[int] = None,
+        class_labels: Optional[List[str]] = None,
+        cost_matrix: Optional[np.ndarray] = None,
+        annotation_costs: Optional[np.ndarray] = None,
+        batch_size: Optional[int] = None,
+    ):
+        super(OpenMLActiveClassificationTask, self).__init__(
+            task_id=task_id,
+            task_type_id=task_type_id,
+            task_type=task_type,
+            data_set_id=data_set_id,
+            estimation_procedure_id=estimation_procedure_id,
+            estimation_procedure_type=estimation_procedure_type,
+            estimation_parameters=estimation_parameters,
+            evaluation_measure=evaluation_measure,
+            target_name=target_name,
+            data_splits_url=data_splits_url,
+        )
+        self.class_labels = class_labels
+        self.cost_matrix = cost_matrix
+        self.annotation_costs = annotation_costs
+        self.batch_size = int(batch_size)
+
+        if cost_matrix is not None:
+            raise NotImplementedError("Costmatrix")
+
+    def _to_dict(self) -> "OrderedDict[str, OrderedDict]":
+        task_container = super(OpenMLActiveClassificationTask, self)._to_dict()
+        task_dict = task_container["oml:task_inputs"]
+
+        if self.batch_size is not None:
+            task_dict["oml:input"].append(
+                OrderedDict([("@name", "batch_size"), ("#text", str(self.batch_size))])
+            )
+        if self.annotation_costs is not None:
+            task_dict["oml:input"].append(
+                OrderedDict([("@name", "annotation_costs"), ("#json", str(self.annotation_costs.tolist))])
+            )
+
+        return task_container

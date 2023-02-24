@@ -12,6 +12,7 @@ import xmltodict
 from ..exceptions import OpenMLCacheException
 from ..datasets import get_dataset
 from .task import (
+    OpenMLActiveClassificationTask,
     OpenMLClassificationTask,
     OpenMLClusteringTask,
     OpenMLLearningCurveTask,
@@ -348,7 +349,7 @@ def get_task(
         # List of class labels availaible in dataset description
         # Including class labels as part of task meta data handles
         #   the case where data download was initially disabled
-        if isinstance(task, (OpenMLClassificationTask, OpenMLLearningCurveTask)):
+        if isinstance(task, (OpenMLClassificationTask, OpenMLLearningCurveTask, OpenMLActiveClassificationTask)):
             task.class_labels = dataset.retrieve_class_labels(task.target_name)
         # Clustering tasks do not have class labels
         # and do not offer download_split
@@ -431,6 +432,7 @@ def _create_task_from_xml(xml):
         TaskType.SUPERVISED_CLASSIFICATION,
         TaskType.SUPERVISED_REGRESSION,
         TaskType.LEARNING_CURVE,
+        TaskType.ACTIVE_CLASSIFICATION,
     ):
         # Convert some more parameters
         for parameter in inputs["estimation_procedure"]["oml:estimation_procedure"][
@@ -449,11 +451,16 @@ def _create_task_from_xml(xml):
             "oml:estimation_procedure"
         ]["oml:data_splits_url"]
 
+    if task_type == TaskType.ACTIVE_CLASSIFICATION:
+        common_kwargs["batch_size"] = inputs["batch_size"]["oml:batch_size"]
+        common_kwargs["annotation_costs"] = inputs["annotation_costs"]["oml:annotation_cost"]
+
     cls = {
         TaskType.SUPERVISED_CLASSIFICATION: OpenMLClassificationTask,
         TaskType.SUPERVISED_REGRESSION: OpenMLRegressionTask,
         TaskType.CLUSTERING: OpenMLClusteringTask,
         TaskType.LEARNING_CURVE: OpenMLLearningCurveTask,
+        TaskType.ACTIVE_CLASSIFICATION: OpenMLActiveClassificationTask
     }.get(task_type)
     if cls is None:
         raise NotImplementedError("Task type %s not supported." % common_kwargs["task_type"])
@@ -468,7 +475,7 @@ def create_task(
     evaluation_measure: Optional[str] = None,
     **kwargs
 ) -> Union[
-    OpenMLClassificationTask, OpenMLRegressionTask, OpenMLLearningCurveTask, OpenMLClusteringTask
+    OpenMLClassificationTask, OpenMLRegressionTask, OpenMLLearningCurveTask, OpenMLClusteringTask, OpenMLActiveClassificationTask
 ]:
     """Create a task based on different given attributes.
 
@@ -507,6 +514,7 @@ def create_task(
         TaskType.SUPERVISED_REGRESSION: OpenMLRegressionTask,
         TaskType.CLUSTERING: OpenMLClusteringTask,
         TaskType.LEARNING_CURVE: OpenMLLearningCurveTask,
+        TaskType.ACTIVE_CLASSIFICATION: OpenMLActiveClassificationTask
     }.get(task_type)
 
     if task_cls is None:

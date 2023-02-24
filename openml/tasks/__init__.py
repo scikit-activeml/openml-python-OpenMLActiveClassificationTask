@@ -7,6 +7,7 @@ from .task import (
     OpenMLRegressionTask,
     OpenMLClusteringTask,
     OpenMLLearningCurveTask,
+    OpenMLActiveClassificationTask,
     TaskType,
 )
 from .split import OpenMLSplit
@@ -24,6 +25,7 @@ __all__ = [
     "OpenMLRegressionTask",
     "OpenMLClassificationTask",
     "OpenMLLearningCurveTask",
+    "OpenMLActiveClassificationTask",
     "create_task",
     "get_task",
     "get_tasks",

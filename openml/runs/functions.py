@@ -31,6 +31,7 @@ from ..tasks import (
     OpenMLRegressionTask,
     OpenMLSupervisedTask,
     OpenMLLearningCurveTask,
+    OpenMLActiveClassificationTask
 )
 from .run import OpenMLRun
 from .trace import OpenMLRunTrace
@@ -575,6 +576,53 @@ def _run_task_get_arffcontent(
             for i, _ in enumerate(test_indices):
                 arff_line = [test_indices[i], pred_y[i]]  # row_id, cluster ID
                 arff_datacontent.append(arff_line)
+
+        elif isinstance(task, OpenMLActiveClassificationTask):
+
+            budget_t = user_defined_measures_fold['budget_t']
+            pred_t = user_defined_measures_fold['pred_t']
+            proba_t = user_defined_measures_fold['proba_t']
+
+            num_cycles = len(budget_t)
+            for c in range(num_cycles):
+                for i, tst_idx in enumerate(test_indices):
+                    if task.class_labels is not None:
+                        pred_ci = pred_t[c, i]
+                        prediction = (
+                            task.class_labels[pred_ci]
+                            if isinstance(pred_ci, (int, np.integer))
+                            else pred_ci
+                        )
+                        if isinstance(test_y, pd.Series):
+                            test_prediction = (
+                                task.class_labels[test_y.iloc[i]]
+                                if isinstance(test_y.iloc[i], int)
+                                else test_y.iloc[i]
+                            )
+                        else:
+                            test_prediction = (
+                                task.class_labels[test_y[i]]
+                                if isinstance(test_y[i], (int, np.integer))
+                                else test_y[i]
+                            )
+                        proba_c = proba_t[c]
+                        pred_prob = proba_c.iloc[i] if isinstance(proba_c, pd.DataFrame) else proba_c[i]
+
+                        arff_line = format_prediction(
+                            task=task,
+                            repeat=rep_no,
+                            fold=fold_no,
+                            sample=sample_no,
+                            index=tst_idx,
+                            prediction=prediction,
+                            truth=test_prediction,
+                            proba=dict(zip(task.class_labels, pred_prob)),
+                            cycle=c,
+                            budget=budget_t[c]
+                        )
+                        arff_datacontent.append(arff_line)
+                    else:
+                        raise ValueError("The task has no class labels")
 
         else:
             raise TypeError(type(task))
@@ -1156,6 +1204,8 @@ def format_prediction(
     truth: Union[str, int, float],
     sample: Optional[int] = None,
     proba: Optional[Dict[str, float]] = None,
+    cycle: Optional[int] = None,
+    budget: Optional[float] = None,
 ) -> List[Union[str, int, float]]:
     """Format the predictions in the specific order as required for the run results.
 
@@ -1181,6 +1231,12 @@ def format_prediction(
         A mapping from each class label to their predicted probability.
         The dictionary should contain an entry for each of the `task.class_labels`.
         E.g.: {"Iris-Setosa": 0.2, "Iris-Versicolor": 0.7, "Iris-Virginica": 0.1}
+    cycle: int, optional (default=None)
+        For active classification tasks only.
+        At which active learning cycle the predictions for the test set are made.
+    budget: float, optional (default=None)
+        For active classification tasks only.
+        The amount of budget spent after the label selection in this cycle.
 
     Returns
     -------
@@ -1203,5 +1259,19 @@ def format_prediction(
         return [repeat, fold, sample, index, *probabilities, truth, prediction]
     elif isinstance(task, OpenMLRegressionTask):
         return [repeat, fold, index, truth, prediction]
+    elif isinstance(task, OpenMLActiveClassificationTask):
+        if proba is None:
+            raise ValueError("`proba` is required for classification task")
+        if task.class_labels is None:
+            raise ValueError("The classification task must have class labels set")
+        if not set(task.class_labels) == set(proba):
+            raise ValueError("Each class should have a predicted probability")
+        if sample is None:
+            if isinstance(task, OpenMLLearningCurveTask):
+                raise ValueError("`sample` can not be none for LearningCurveTask")
+            else:
+                sample = 0
+        probabilities = [proba[c] for c in task.class_labels]
+        return [repeat, fold, cycle, budget, index, *probabilities, truth, prediction]
     else:
         raise NotImplementedError(f"Formatting for {type(task)} is not supported.")
