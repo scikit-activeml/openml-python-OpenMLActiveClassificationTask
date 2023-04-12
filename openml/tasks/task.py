@@ -533,7 +533,7 @@ class OpenMLActiveClassificationTask(OpenMLSupervisedTask):
         self.class_labels = class_labels
         self.cost_matrix = cost_matrix
         self.annotation_costs = annotation_costs
-        self.batch_size = int(batch_size)
+        self.batch_size = None if batch_size is None else int(batch_size)
 
         if cost_matrix is not None:
             raise NotImplementedError("Costmatrix")
