@@ -394,6 +394,12 @@ class OpenMLRun(OpenMLBase):
                 ("budget", "NUMERIC"),
                 ("row_id", "NUMERIC"),
             ]
+            # instance_specifications = [
+            #     ("repeat", "NUMERIC"),
+            #     ("fold", "NUMERIC"),
+            #     ("sample", "NUMERIC"),  # Legacy
+            #     ("row_id", "NUMERIC"),
+            # ]
 
             arff_dict["attributes"] = instance_specifications
             if class_labels is not None:
@@ -620,6 +626,16 @@ class OpenMLRun(OpenMLBase):
                                 ("oml:value", str(value)),
                             ]
                         )
+                        if isinstance(value, list):
+                            current = OrderedDict(
+                                [
+                                    ("@repeat", str(repeat)),
+                                    ("@fold", str(fold)),
+                                    ("oml:name", measure),
+                                    ("oml:value", '0'),
+                                    # ("oml:array_data", str(value))[:100],
+                                ]
+                            )
                         description["oml:run"]["oml:output_data"]["oml:evaluation"].append(current)
         if self.sample_evaluations is not None:
             for measure in self.sample_evaluations:

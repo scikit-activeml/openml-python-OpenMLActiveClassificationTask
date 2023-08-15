@@ -587,7 +587,7 @@ def _run_task_get_arffcontent(
             for c in range(num_cycles):
                 for i, tst_idx in enumerate(test_indices):
                     if task.class_labels is not None:
-                        pred_ci = pred_t[c, i]
+                        pred_ci = pred_t[c][i]
                         prediction = (
                             task.class_labels[pred_ci]
                             if isinstance(pred_ci, (int, np.integer))
@@ -1272,6 +1272,7 @@ def format_prediction(
             else:
                 sample = 0
         probabilities = [proba[c] for c in task.class_labels]
+        # return [repeat, fold, sample, index, *probabilities, truth, prediction]
         return [repeat, fold, cycle, budget, index, *probabilities, truth, prediction]
     else:
         raise NotImplementedError(f"Formatting for {type(task)} is not supported.")
