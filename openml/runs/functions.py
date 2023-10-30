@@ -45,7 +45,7 @@ if TYPE_CHECKING:
 
 RUNS_CACHE_DIR_NAME = "runs"
 
-
+# TODO: explicit passing of extension
 def run_model_on_task(
     model: Any,
     task: Union[int, str, OpenMLTask],

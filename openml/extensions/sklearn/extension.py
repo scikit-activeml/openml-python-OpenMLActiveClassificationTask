@@ -580,7 +580,8 @@ class SklearnExtension(Extension):
 
     @classmethod
     def _is_sklearn_flow(cls, flow: OpenMLFlow) -> bool:
-        if getattr(flow, "dependencies", None) is not None and "sklearn" in flow.dependencies:
+        # TODO: Added hot fix to avoid collisions with skactiveml models
+        if getattr(flow, "dependencies", None) is not None and "sklearn" in flow.dependencies and "skactiveml" not in flow.external_version:
             return True
         if flow.external_version is None:
             return False
@@ -588,6 +589,7 @@ class SklearnExtension(Extension):
             return (
                 flow.external_version.startswith("sklearn==")
                 or ",sklearn==" in flow.external_version
+                and "skactiveml" not in flow.external_version
             )
 
     def _get_sklearn_description(self, model: Any, char_lim: int = 1024) -> str:
