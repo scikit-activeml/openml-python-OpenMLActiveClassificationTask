@@ -153,7 +153,8 @@ following rules before you submit a pull request:
    
 - Add [unit tests](https://github.com/openml/openml-python/tree/develop/tests) and [examples](https://github.com/openml/openml-python/tree/develop/examples) for any new functionality being introduced. 
     - If an unit test contains an upload to the test server, please ensure that it is followed by a file collection for deletion, to prevent the test server from bulking up. For example, `TestBase._mark_entity_for_removal('data', dataset.dataset_id)`, `TestBase._mark_entity_for_removal('flow', (flow.flow_id, flow.name))`.
-    - Please ensure that the example is run on the test server by beginning with the call to `openml.config.start_using_configuration_for_example()`.      
+    - Please ensure that the example is run on the test server by beginning with the call to `openml.config.start_using_configuration_for_example()`.
+    - Add the `@pytest.mark.sklearn` marker to your unit tests if they have a dependency on scikit-learn.
 
 -  All tests pass when running `pytest`. On
    Unix-like systems, check with (from the toplevel source folder):
@@ -213,28 +214,32 @@ Before each commit, it will automatically run:
    but make sure to make adjustments if it does fail.
     
 If you want to run the pre-commit tests without doing a commit, run:
-  ```bash
-  $ pre-commit run --all-files
-  ```
+```bash
+$ make check
+```
+or on a system without make, like Windows:
+```bash
+$ pre-commit run --all-files
+```
 Make sure to do this at least once before your first commit to check your setup works.
 
 Executing a specific unit test can be done by specifying the module, test case, and test.
 To obtain a hierarchical list of all tests, run
 
-  ```bash
-  $  pytest --collect-only
+```bash
+$  pytest --collect-only
 
-    <Module 'tests/test_datasets/test_dataset.py'>
-      <UnitTestCase 'OpenMLDatasetTest'>
-        <TestCaseFunction 'test_dataset_format_constructor'>
-        <TestCaseFunction 'test_get_data'>
-        <TestCaseFunction 'test_get_data_rowid_and_ignore_and_target'>
-        <TestCaseFunction 'test_get_data_with_ignore_attributes'>
-        <TestCaseFunction 'test_get_data_with_rowid'>
-        <TestCaseFunction 'test_get_data_with_target'>
-      <UnitTestCase 'OpenMLDatasetTestOnTestServer'>
-        <TestCaseFunction 'test_tagging'>
-   ```
+ <Module 'tests/test_datasets/test_dataset.py'>
+   <UnitTestCase 'OpenMLDatasetTest'>
+     <TestCaseFunction 'test_dataset_format_constructor'>
+     <TestCaseFunction 'test_get_data'>
+     <TestCaseFunction 'test_get_data_rowid_and_ignore_and_target'>
+     <TestCaseFunction 'test_get_data_with_ignore_attributes'>
+     <TestCaseFunction 'test_get_data_with_rowid'>
+     <TestCaseFunction 'test_get_data_with_target'>
+   <UnitTestCase 'OpenMLDatasetTestOnTestServer'>
+     <TestCaseFunction 'test_tagging'>
+```
 
 You may then run a specific module, test case, or unit test respectively:
 ```bash

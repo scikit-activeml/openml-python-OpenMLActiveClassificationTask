@@ -1,21 +1,22 @@
 # License: BSD 3-Clause
 
-from .task import (
-    OpenMLTask,
-    OpenMLSupervisedTask,
-    OpenMLClassificationTask,
-    OpenMLRegressionTask,
-    OpenMLClusteringTask,
-    OpenMLLearningCurveTask,
-    OpenMLActiveClassificationTask,
-    TaskType,
-)
-from .split import OpenMLSplit
 from .functions import (
     create_task,
+    delete_task,
     get_task,
     get_tasks,
     list_tasks,
+)
+from .split import OpenMLSplit
+from .task import (
+    OpenMLClassificationTask,
+    OpenMLActiveClassificationTask,
+    OpenMLClusteringTask,
+    OpenMLLearningCurveTask,
+    OpenMLRegressionTask,
+    OpenMLSupervisedTask,
+    OpenMLTask,
+    TaskType,
 )
 
 __all__ = [
@@ -32,4 +33,5 @@ __all__ = [
     "list_tasks",
     "OpenMLSplit",
     "TaskType",
+    "delete_task",
 ]

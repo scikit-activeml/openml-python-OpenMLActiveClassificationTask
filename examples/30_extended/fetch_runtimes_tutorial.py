@@ -79,6 +79,7 @@ print(
     )
 )
 
+
 # Creating utility function
 def print_compare_runtimes(measures):
     for repeat, val1 in measures["usercpu_time_millis_training"].items():
@@ -408,7 +409,7 @@ print_compare_runtimes(measures)
 ################################################################################
 # Running a Neural Network from scikit-learn that uses scikit-learn independent
 # parallelism using libraries such as `MKL, OpenBLAS or BLIS
-# <https://scikit-learn.org/stable/computing/parallelism.html#parallel-numpy-routines-from-numerical-libraries>`_.
+# <https://scikit-learn.org/stable/computing/parallelism.html#parallel-numpy-and-scipy-routines-from-numerical-libraries>`_.
 
 mlp = MLPClassifier(max_iter=10)
 

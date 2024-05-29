@@ -30,7 +30,7 @@ Example
             ('estimator', tree.DecisionTreeClassifier())
         ]
     )
-    # Download the OpenML task for the german credit card dataset with 10-fold
+    # Download the OpenML task for the pendigits dataset with 10-fold
     # cross-validation.
     task = openml.tasks.get_task(32)
     # Run the scikit-learn model on the task.
@@ -40,7 +40,7 @@ Example
     run.publish()
     print(f'View the run online: {run.openml_url}')
 
-You can find more examples in our :ref:`sphx_glr_examples`.
+You can find more examples in our :ref:`examples-index`.
 
 ----------------------------
 How to get OpenML for python
@@ -60,7 +60,7 @@ Content
 
 * :ref:`usage`
 * :ref:`api`
-* :ref:`sphx_glr_examples`
+* :ref:`examples-index`
 * :ref:`extensions`
 * :ref:`contributing`
 * :ref:`progress`
@@ -93,17 +93,21 @@ Citing OpenML-Python
 If you use OpenML-Python in a scientific publication, we would appreciate a
 reference to the following paper:
 
-
- `OpenML-Python: an extensible Python API for OpenML
- <https://arxiv.org/abs/1911.02490>`_,
- Feurer *et al.*, arXiv:1911.02490.
+| Matthias Feurer, Jan N. van Rijn, Arlind Kadra, Pieter Gijsbers, Neeratyoy Mallik, Sahithya Ravi, Andreas Müller, Joaquin Vanschoren, Frank Hutter
+| **OpenML-Python: an extensible Python API for OpenML**
+| Journal of Machine Learning Research, 22(100):1−5, 2021
+| `https://www.jmlr.org/papers/v22/19-920.html <https://www.jmlr.org/papers/v22/19-920.html>`_
 
  Bibtex entry::
 
-     @article{feurer-arxiv19a,
-         author    = {Matthias Feurer and Jan N. van Rijn and Arlind Kadra and Pieter Gijsbers and Neeratyoy Mallik and Sahithya Ravi and Andreas Müller and Joaquin Vanschoren and Frank Hutter},
-         title     = {OpenML-Python: an extensible Python API for OpenML},
-         journal   = {arXiv:1911.02490},
-         year      = {2019},
-     }
+    @article{JMLR:v22:19-920,
+        author  = {Matthias Feurer and Jan N. van Rijn and Arlind Kadra and Pieter Gijsbers and Neeratyoy Mallik and Sahithya Ravi and Andreas MÃ¼ller and Joaquin Vanschoren and Frank Hutter},
+        title   = {OpenML-Python: an extensible Python API for OpenML},
+        journal = {Journal of Machine Learning Research},
+        year    = {2021},
+        volume  = {22},
+        number  = {100},
+        pages   = {1--5},
+        url     = {http://jmlr.org/papers/v22/19-920.html}
+    }
 

@@ -6,25 +6,91 @@
 Changelog
 =========
 
+next
+~~~~~~
+
+ * ...
+
+0.14.2
+~~~~~~
+
+ * MAINT #1280: Use the server-provided ``parquet_url`` instead of ``minio_url`` to determine the location of the parquet file.
+ * ADD #716: add documentation for remaining attributes of classes and functions.
+ * ADD #1261: more annotations for type hints.
+ * MAINT #1294: update tests to new tag specification.
+ * FIX #1314: Update fetching a bucket from MinIO.
+ * FIX #1315: Make class label retrieval more lenient.
+ * ADD #1316: add feature descriptions ontologies support.
+ * MAINT #1310/#1307: switch to ruff and resolve all mypy errors.
+
+0.14.1
+~~~~~~
+
+ * FIX: Fallback on downloading ARFF when failing to download parquet from MinIO due to a ServerError.
+
+0.14.0
+~~~~~~
+
+**IMPORTANT:** This release paves the way towards a breaking update of OpenML-Python. From version
+0.15, functions that had the option to return a pandas DataFrame will return a pandas DataFrame
+by default. This version (0.14) emits a warning if you still use the old access functionality. 
+More concretely:
+
+* In 0.15 we will drop the ability to return dictionaries in listing calls and only provide
+  pandas DataFrames. To disable warnings in 0.14 you have to request a pandas DataFrame
+  (using ``output_format="dataframe"``).
+* In 0.15 we will drop the ability to return datasets as numpy arrays and only provide
+  pandas DataFrames. To disable warnings in 0.14 you have to request a pandas DataFrame 
+  (using ``dataset_format="dataframe"``).
+
+Furthermore, from version 0.15, OpenML-Python will no longer download datasets and dataset metadata
+by default. This version (0.14) emits a warning if you don't explicitly specifiy the desired behavior.
+
+Please see the pull requests #1258 and #1260 for further information.
+
+* ADD #1081: New flag that allows disabling downloading dataset features.
+* ADD #1132: New flag that forces a redownload of cached data.
+* FIX #1244: Fixes a rare bug where task listing could fail when the server returned invalid data.
+* DOC #1229: Fixes a comment string for the main example.
+* DOC #1241: Fixes a comment in an example.
+* MAINT #1124: Improve naming of helper functions that govern the cache directories.
+* MAINT #1223, #1250: Update tools used in pre-commit to the latest versions (``black==23.30``, ``mypy==1.3.0``, ``flake8==6.0.0``).
+* MAINT #1253: Update the citation request to the JMLR paper.
+* MAINT #1246: Add a warning that warns the user that checking for duplicate runs on the server cannot be done without an API key.
+
 0.13.1
 ~~~~~~
 
- * Add new contributions here.
-
+* ADD #1081 #1132: Add additional options for (not) downloading datasets ``openml.datasets.get_dataset`` and cache management.
+* ADD #1028: Add functions to delete runs, flows, datasets, and tasks (e.g., ``openml.datasets.delete_dataset``).
+* ADD #1144: Add locally computed results to the ``OpenMLRun`` object's representation if the run was created locally and not downloaded from the server.
+* ADD #1180: Improve the error message when the checksum of a downloaded dataset does not match the checksum provided by the API.
+* ADD #1201: Make ``OpenMLTraceIteration`` a dataclass.
+* DOC #1069: Add argument documentation for the ``OpenMLRun`` class.
+* DOC #1241 #1229 #1231: Minor documentation fixes and resolve documentation examples not working.
+* FIX #1197 #559 #1131: Fix the order of ground truth and predictions in the ``OpenMLRun`` object and in ``format_prediction``.
+* FIX #1198: Support numpy 1.24 and higher.
+* FIX #1216: Allow unknown task types on the server. This is only relevant when new task types are added to the test server.
+* FIX #1223: Fix mypy errors for implicit optional typing.
+* MAINT #1155: Add dependabot github action to automatically update other github actions.
+* MAINT #1199: Obtain pre-commit's flake8 from github.com instead of gitlab.com.
+* MAINT #1215: Support latest numpy version.
+* MAINT #1218: Test Python3.6 on Ubuntu 20.04 instead of the latest Ubuntu (which is 22.04).
+* MAINT #1221 #1212 #1206 #1211: Update github actions to the latest versions.
 
 0.13.0
 ~~~~~~
 
- * FIX#1030: ``pre-commit`` hooks now no longer should issue a warning.
- * FIX#1058, #1100: Avoid ``NoneType`` error when printing task without ``class_labels`` attribute.
- * FIX#1110: Make arguments to ``create_study`` and ``create_suite`` that are defined as optional by the OpenML XSD actually optional.
- * FIX#1147: ``openml.flow.flow_exists`` no longer requires an API key.
- * FIX#1184: Automatically resolve proxies when downloading from minio. Turn this off by setting environment variable ``no_proxy="*"``.
- * MAIN#1088: Do CI for Windows on Github Actions instead of Appveyor.
- * MAINT#1104: Fix outdated docstring for ``list_task``.
- * MAIN#1146: Update the pre-commit dependencies.
- * ADD#1103: Add a ``predictions`` property to OpenMLRun for easy accessibility of prediction data.
- * ADD#1188: EXPERIMENTAL. Allow downloading all files from a minio bucket with ``download_all_files=True`` for ``get_dataset``.
+ * FIX #1030: ``pre-commit`` hooks now no longer should issue a warning.
+ * FIX #1058, #1100: Avoid ``NoneType`` error when printing task without ``class_labels`` attribute.
+ * FIX #1110: Make arguments to ``create_study`` and ``create_suite`` that are defined as optional by the OpenML XSD actually optional.
+ * FIX #1147: ``openml.flow.flow_exists`` no longer requires an API key.
+ * FIX #1184: Automatically resolve proxies when downloading from minio. Turn this off by setting environment variable ``no_proxy="*"``.
+ * MAINT #1088: Do CI for Windows on Github Actions instead of Appveyor.
+ * MAINT #1104: Fix outdated docstring for ``list_task``.
+ * MAINT #1146: Update the pre-commit dependencies.
+ * ADD #1103: Add a ``predictions`` property to OpenMLRun for easy accessibility of prediction data.
+ * ADD #1188: EXPERIMENTAL. Allow downloading all files from a minio bucket with ``download_all_files=True`` for ``get_dataset``.
 
 
 0.12.2
